@@ -1,26 +1,54 @@
 import React from "react";
 import './App.css';
-import {Space} from "antd";
+import {Pagination} from "antd";
 import SearchInput from "../SearchInput/SearchInput";
 import Filter from "../Filter/Filter";
 import MovieCardsList from "../MovieCardsList/MovieCardsList";
-import PaginationItem from "../PaginationItem/PaginationItem";
+import key from "../../constants/key";
 
-function App() {
-  return (
-    <div className='container'>
-      <Filter />
-      <SearchInput />
-      <div className='cards'>
-        <Space>
-          <MovieCardsList />
-        </Space>
+class App extends React.Component {
+
+  state = {
+    movies: [],
+    searchField: ''
+  }
+
+  onChangeInput = (event) => {
+    this.setState({
+      searchField: event.target.value
+    })
+  };
+
+  onSubmit = (event) => {
+    event.preventDefault();
+    const {searchField} = this.state;
+    fetch(`https://api.themoviedb.org/3/search/movie?api_key=${key}&language=en-US&page=1&include_adult=false&query=${searchField}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          movies: [...data.results]
+        });
+      });
+  };
+
+  render() {
+
+    const {movies} = this.state;
+
+    return (
+      <div className='container'>
+        <Filter/>
+        <SearchInput onSubmit={this.onSubmit}
+                     onChangeInput={this.onChangeInput} />
+        <div className='cards'>
+          <MovieCardsList movies={movies}/>
+        </div>
+        <div className='pag'>
+          <Pagination defaultCurrent={1} total={50}/>
+        </div>
       </div>
-      <div className='pag'>
-        <PaginationItem />
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;

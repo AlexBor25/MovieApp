@@ -15,9 +15,16 @@
   justify-content: space-between;
 }
 
+.poster {
+  height: 279px;
+  width: 183px;
+}
+
 .title {
+  width: 202px;
   font-size: 20px;
   line-height: 28px;
+  white-space: normal;
 }
 
 .rating {
@@ -54,9 +61,16 @@
 }
 
 .card-descr {
+  width: 240px;
+  height: 85px;
   margin-top: 10px;
   font-size: 12px;
   line-height: 22px;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
 .stars {
