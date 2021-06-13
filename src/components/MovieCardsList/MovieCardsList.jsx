@@ -9,7 +9,7 @@ import './movieCardsList.css';
 
 const MovieCardsList = ({movies}) => (
   <Space align='center' wrap size={40}>
-      { movies.map(movie => (<MovieCard key={movie.id} movie={movie} />)) }
+    { movies.map(movie => (<MovieCard key={movie.id} movie={movie} />)) }
   </Space>
 );
 

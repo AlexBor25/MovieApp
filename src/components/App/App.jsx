@@ -1,39 +1,68 @@
 import React from "react";
 import './App.css';
-import {Pagination} from "antd";
+import {Pagination, Alert} from "antd";
 import SearchInput from "../SearchInput/SearchInput";
 import Filter from "../Filter/Filter";
 import MovieCardsList from "../MovieCardsList/MovieCardsList";
-import key from "../../constants/key";
+import Api from "../../api/api";
+import Loader from "../Loader/Loader";
 
 class App extends React.Component {
 
+  api = new Api();
+
   state = {
     movies: [],
-    searchField: ''
-  }
+    searchField: '',
+    loading: true,
+    error: false
+  };
+
+  componentDidMount() {
+    this.api.getPopularMovies().then(data => {
+      this.setState({
+        movies: [...data],
+        loading: false
+      })
+    }).catch(this.onError);
+  };
 
   onChangeInput = (event) => {
     this.setState({
-      searchField: event.target.value
-    })
+      searchField: (event.target.value).toLowerCase(),
+    });
   };
 
   onSubmit = (event) => {
     event.preventDefault();
+    this.setState({
+      loading: true
+    });
     const {searchField} = this.state;
-    fetch(`https://api.themoviedb.org/3/search/movie?api_key=${key}&language=en-US&page=1&include_adult=false&query=${searchField}`)
-      .then(res => res.json())
+    this.api.getMovies(searchField)
       .then(data => {
         this.setState({
-          movies: [...data.results]
+          movies: [...data],
+          loading: false,
+          error: false
         });
-      });
+      }).catch(this.onError);
+  };
+  
+  onError = () => {
+    this.setState({
+      error: true,
+      loading: false
+    });
   };
 
   render() {
-
-    const {movies} = this.state;
+    const {movies, loading, error} = this.state;
+    const errorMsg = error ? <Alert type="error" message="Не удалось загрузить список фильмов!" banner /> : null;
+    const alertMsg = !error && movies.length === 0
+      ? <Alert message="Не удалось найти указанный фильм!" banner closable/>
+      : null;
+    const loader = loading ? <Loader /> : <MovieCardsList movies={movies}/>;
 
     return (
       <div className='container'>
@@ -41,14 +70,16 @@ class App extends React.Component {
         <SearchInput onSubmit={this.onSubmit}
                      onChangeInput={this.onChangeInput} />
         <div className='cards'>
-          <MovieCardsList movies={movies}/>
+          {loading ? null : alertMsg}
+          {loader}
+          {error ? errorMsg : null}
         </div>
         <div className='pag'>
           <Pagination defaultCurrent={1} total={50}/>
         </div>
       </div>
     );
-  }
+  };
 }
 
 export default App;
