@@ -1,11 +1,11 @@
 import React from "react";
 import './App.css';
-import {Pagination, Alert} from "antd";
 import SearchInput from "../SearchInput/SearchInput";
 import Filter from "../Filter/Filter";
 import MovieCardsList from "../MovieCardsList/MovieCardsList";
 import Api from "../../api/api";
-import Loader from "../Loader/Loader";
+
+const debounce = require('lodash.debounce');
 
 class App extends React.Component {
 
@@ -15,38 +15,45 @@ class App extends React.Component {
     movies: [],
     searchField: '',
     loading: true,
-    error: false
+    error: false,
+    currentPage: 1,
+    totalResults: 0,
+    showPagination: true,
   };
 
+  debounceFn = debounce(this.getData.bind(this), 1500);
+
   componentDidMount() {
-    this.api.getPopularMovies().then(data => {
+    const {currentPage} = this.state;
+    this.api.getPopularMovies(currentPage).then(data => {
       this.setState({
-        movies: [...data],
-        loading: false
+        movies: [...data.results],
+        loading: false,
+        totalResults: data.total_results,
+        showPagination: false
       })
+    }).catch(this.onError);
+  };
+
+  getData (searchField) {
+    this.api.getMovies(searchField).then(data => {
+      this.setState({
+        movies: [...data.results],
+        loading: false,
+        error: false,
+        showPagination: true,
+        totalResults: data.total_results
+      });
     }).catch(this.onError);
   };
 
   onChangeInput = (event) => {
     this.setState({
       searchField: (event.target.value).toLowerCase(),
+      loading: true,
+      showPagination: true,
     });
-  };
-
-  onSubmit = (event) => {
-    event.preventDefault();
-    this.setState({
-      loading: true
-    });
-    const {searchField} = this.state;
-    this.api.getMovies(searchField)
-      .then(data => {
-        this.setState({
-          movies: [...data],
-          loading: false,
-          error: false
-        });
-      }).catch(this.onError);
+    this.debounceFn(event.target.value)
   };
   
   onError = () => {
@@ -56,26 +63,36 @@ class App extends React.Component {
     });
   };
 
+  onChangePage = (pageNumber) => {
+    const {searchField} = this.state;
+    this.setState({
+      loading: true
+    });
+    this.api.getMovies(searchField, pageNumber).then(data => {
+      this.setState({
+        currentPage: data.page,
+        totalResults: data.total_results,
+        movies: [...data.results],
+        loading: false,
+      });
+    });
+  };
+
   render() {
-    const {movies, loading, error} = this.state;
-    const errorMsg = error ? <Alert type="error" message="Не удалось загрузить список фильмов!" banner /> : null;
-    const alertMsg = !error && movies.length === 0
-      ? <Alert message="Не удалось найти указанный фильм!" banner closable/>
-      : null;
-    const loader = loading ? <Loader /> : <MovieCardsList movies={movies}/>;
+    const {movies, loading, error, totalResults, currentPage, showPagination} = this.state;
 
     return (
       <div className='container'>
         <Filter/>
-        <SearchInput onSubmit={this.onSubmit}
-                     onChangeInput={this.onChangeInput} />
+        <SearchInput onChangeInput={this.onChangeInput} />
         <div className='cards'>
-          {loading ? null : alertMsg}
-          {loader}
-          {error ? errorMsg : null}
-        </div>
-        <div className='pag'>
-          <Pagination defaultCurrent={1} total={50}/>
+          <MovieCardsList movies={movies}
+                          loading={loading}
+                          totalResults={totalResults}
+                          currentPage={currentPage}
+                          showPagination={showPagination}
+                          onChangePage={this.onChangePage}
+                          error={error} />
         </div>
       </div>
     );

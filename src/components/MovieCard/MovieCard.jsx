@@ -35,7 +35,7 @@ const  MovieCard = ({movie}) => {
   );
 }
 
-MovieCard.defaultValue = {};
+MovieCard.defaultProps = {};
 
 MovieCard.propTypes = {
   movie: PropTypes.objectOf(PropTypes.any).isRequired,

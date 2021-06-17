@@ -1,24 +1,68 @@
 import React from 'react';
-import {Space} from "antd";
+import {Alert, Pagination, Space} from "antd";
 
 import PropTypes from 'prop-types';
 
 import MovieCard from "../MovieCard/MovieCard";
 
 import './movieCardsList.css';
+import Loader from "../Loader/Loader";
 
-const MovieCardsList = ({movies}) => (
-  <Space align='center' wrap size={40}>
-    { movies.map(movie => (<MovieCard key={movie.id} movie={movie} />)) }
-  </Space>
-);
+const MovieCardsList = ({movies, showPagination, loading, error, currentPage, totalResults, onChangePage}) => {
 
-MovieCardsList.defaultValue = {
-    movies: []
+  const errorMsg = error ? <Alert type="error" message="Не удалось загрузить список фильмов!" banner /> : null;
+  const moviesItems =  movies.map(movie => (<MovieCard key={movie.id} movie={movie} />));
+
+  if(loading) {
+    return <Loader />;
+  }
+
+  if(error) {
+    return errorMsg;
+  }
+
+  if(movies.length === 0) {
+    return <Alert message="Не удалось найти указанный фильм!" banner closable/>;
+  }
+
+  return (
+    <>
+      <Space align='center' wrap size={40}>
+        {moviesItems}
+      </Space>
+      <div className='pag'>
+        { totalResults > 20 && showPagination
+          ? <Pagination defaultCurrent={1}
+                        current={currentPage}
+                        pageSize={20}
+                        onChange={onChangePage}
+                        total={totalResults}/>
+          : null
+        }
+
+      </div>
+    </>
+  );
+};
+
+MovieCardsList.defaultProps = {
+  movies: [],
+  loading: false,
+  error: false,
+  currentPage: 1,
+  totalResults: 0,
+  onChangePage: () => {},
+  showPagination: true
 };
 
 MovieCardsList.propTypes = {
-    movies: PropTypes.arrayOf(PropTypes.object).isRequired
+  movies: PropTypes.arrayOf(PropTypes.object),
+  loading: PropTypes.bool,
+  error: PropTypes.bool,
+  showPagination: PropTypes.bool,
+  currentPage: PropTypes.number,
+  totalResults: PropTypes.number,
+  onChangePage: PropTypes.func,
 };
 
 export default MovieCardsList;

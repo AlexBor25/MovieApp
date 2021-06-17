@@ -5,22 +5,20 @@ import PropTypes from 'prop-types';
 
 import './searchInput.css';
 
-function SearchInput({onSubmit, onChangeInput}) {
+function SearchInput({onChangeInput}) {
   return (
-    <form onSubmit={onSubmit}>
+    <form>
       <Input className='search-input' onChange={onChangeInput} size='large' placeholder="Type to search"/>
     </form>
   );
 }
 
-SearchInput.defaultValue = {
+SearchInput.defaultProps = {
   onChangeInput: () => {},
-  onSubmit: () => {}
 }
 
 SearchInput.propTypes = {
-  onChangeInput: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired
+  onChangeInput: PropTypes.func,
 }
 
 export default SearchInput;
