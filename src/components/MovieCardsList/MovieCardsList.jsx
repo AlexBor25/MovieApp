@@ -1,17 +1,18 @@
 import React from 'react';
-import {Alert, Pagination, Space} from "antd";
-
+import {Alert, Pagination} from "antd";
 import PropTypes from 'prop-types';
 
 import MovieCard from "../MovieCard/MovieCard";
-
-import './movieCardsList.css';
 import Loader from "../Loader/Loader";
 
-const MovieCardsList = ({movies, showPagination, loading, error, currentPage, totalResults, onChangePage}) => {
+import './movieCardsList.css';
+
+const MovieCardsList = ({movies, showPagination, loading, error, currentPage, totalResults, onChangePage, changeRating}) => {
 
   const errorMsg = error ? <Alert type="error" message="Не удалось загрузить список фильмов!" banner /> : null;
-  const moviesItems =  movies.map(movie => (<MovieCard key={movie.id} movie={movie} />));
+  const moviesItems =  movies.map(movie => (<MovieCard key={movie.id}
+                                                       changeRating={changeRating}
+                                                       movie={movie} />));
 
   if(loading) {
     return <Loader />;
@@ -27,9 +28,9 @@ const MovieCardsList = ({movies, showPagination, loading, error, currentPage, to
 
   return (
     <>
-      <Space align='center' wrap size={40}>
+      <div className='movie-items'>
         {moviesItems}
-      </Space>
+      </div>
       <div className='pag'>
         { totalResults > 20 && showPagination
           ? <Pagination defaultCurrent={1}
@@ -39,7 +40,6 @@ const MovieCardsList = ({movies, showPagination, loading, error, currentPage, to
                         total={totalResults}/>
           : null
         }
-
       </div>
     </>
   );
@@ -52,7 +52,8 @@ MovieCardsList.defaultProps = {
   currentPage: 1,
   totalResults: 0,
   onChangePage: () => {},
-  showPagination: true
+  changeRating: () => {},
+  showPagination: true,
 };
 
 MovieCardsList.propTypes = {
@@ -63,6 +64,7 @@ MovieCardsList.propTypes = {
   currentPage: PropTypes.number,
   totalResults: PropTypes.number,
   onChangePage: PropTypes.func,
+  changeRating: PropTypes.func,
 };
 
 export default MovieCardsList;

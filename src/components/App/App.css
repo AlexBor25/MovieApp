@@ -15,6 +15,18 @@ body {
   padding: 14px 35px;
 }
 
+.tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .cards {
   margin-top: 32px;
+}
+
+@media(max-width: 992px){
+  .container {
+    width: 992px;
+  }
 }

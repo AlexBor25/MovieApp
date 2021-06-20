@@ -2,10 +2,11 @@
   width: 450px;
   display: flex;
   box-shadow: 0 0 10px 0 rgba(0,0,0, 0.2);
+  margin-bottom: 20px;
 }
 
 .descr {
-  padding: 12px 9px 0 20px;
+  padding: 12px 9px 12px 20px;
   display: flex;
   flex-direction: column;
 }
@@ -30,7 +31,6 @@
 .rating {
   width: 30px;
   height: 30px;
-  border: 2px solid #E9D100;
   border-radius: 100%;
   font-size: 12px;
   line-height: 22px;
@@ -47,7 +47,6 @@
 }
 
 .genre {
-  width: 48px;
   height: 20px;
   border: 1px solid #D9D9D9;
   background: #FAFAFA;
@@ -58,7 +57,14 @@
   padding: 2px 3px;
   text-align: center;
   margin-top: 7px;
+  margin-right: 5px;
 }
+
+.genre-items {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 
 .card-descr {
   width: 240px;
@@ -74,5 +80,6 @@
 }
 
 .stars {
+  margin-top: auto;
   font-size: 16px;
 }

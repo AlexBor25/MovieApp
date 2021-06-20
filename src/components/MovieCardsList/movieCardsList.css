@@ -2,5 +2,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 72px;
+  margin-top: 30px;
+}
+
+.movie-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
