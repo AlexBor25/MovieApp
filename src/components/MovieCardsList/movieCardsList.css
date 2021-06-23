@@ -8,5 +8,11 @@
 .movie-items {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-around;
+}
+
+@media (max-width: 968px){
+  .movie-items{
+    justify-content: center;
+  }
 }

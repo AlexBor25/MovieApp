@@ -23,7 +23,9 @@ class App extends React.Component {
     loading: true,
     error: false,
     currentPage: 1,
+    currentRatedPage: 1,
     totalResults: 0,
+    totalRatedResults: 0,
     showPagination: true,
   };
 
@@ -80,10 +82,16 @@ class App extends React.Component {
     saveRating(id, value);
   };
 
-  getRatedMovie = () => {
-    this.api.getRatedMovies().then(data => {
+  getRatedMovie = (pageNumber = 1) => {
+    this.setState({
+      loading: true
+    });
+    this.api.getRatedMovies(pageNumber).then(data => {
       this.setState({
         ratedMovies: [...data.results],
+        totalRatedResults: data.total_results,
+        currentRatedPage: pageNumber,
+        loading: false,
       });
     });
   };
@@ -109,13 +117,17 @@ class App extends React.Component {
     });
   };
 
+  onChangeRatedPage = (pageNumber) => {
+    this.getRatedMovie(pageNumber);
+  };
+
   render() {
-    const {searchMovies, loading, error, totalResults, currentPage, showPagination, ratedMovies} = this.state;
+    const {searchMovies, currentRatedPage, totalRatedResults, loading, error, totalResults, currentPage, showPagination, ratedMovies} = this.state;
 
     return (
       <ContextProvider>
         <div className='container'>
-          <Tabs className='tabs' defaultActiveKey="1" onChange={this.changeTabs}>
+          <Tabs className='tabs' centered defaultActiveKey="1" onChange={this.changeTabs}>
             <TabPane tab="Search" key="1">
               <SearchInput onChangeInput={this.onChangeInput} />
               <div className='cards'>
@@ -130,7 +142,13 @@ class App extends React.Component {
               </div>
             </TabPane>
             <TabPane tab="Rated" key="2">
-              <MovieCardsList movies={ratedMovies} />
+              <MovieCardsList movies={ratedMovies}
+                              error={error}
+                              onChangePage={this.onChangeRatedPage}
+                              currentPage={currentRatedPage}
+                              totalResults={totalRatedResults}
+                              showPagination
+                              loading={loading} />
             </TabPane>
           </Tabs>
         </div>

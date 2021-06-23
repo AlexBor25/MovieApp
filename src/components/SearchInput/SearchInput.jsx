@@ -7,9 +7,10 @@ import './searchInput.css';
 
 function SearchInput({onChangeInput}) {
   return (
-    <form>
-      <Input className='search-input' onChange={onChangeInput} size='large' placeholder="Type to search"/>
-    </form>
+      <Input className='search-input'
+             onChange={onChangeInput}
+             size='large'
+             placeholder="Type to search"/>
   );
 }
 

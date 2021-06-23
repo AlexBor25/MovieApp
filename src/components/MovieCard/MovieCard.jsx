@@ -37,7 +37,7 @@ const  MovieCard = ({movie, changeRating}) => {
   return (
     <div className='card'>
       <img className='poster' src={poster} alt="card-img"/>
-      <div className='descr'>
+      <div className="card__wrapper">
         <div className='title__wrap'>
           <span className='title'>{title}</span>
           <span className='rating' style={border}>{average}</span>
@@ -46,7 +46,9 @@ const  MovieCard = ({movie, changeRating}) => {
         <div className="genre-items">
           {filmGenre}
         </div>
-        <p className='card-descr'>{clipFunc(overview)}</p>
+        <div className="descr">
+          <p className='card-text'>{clipFunc(overview)}</p>
+        </div>
         <Rate className='stars' onChange={(value) => {
           changeRating(id, value);
           setRate(value);

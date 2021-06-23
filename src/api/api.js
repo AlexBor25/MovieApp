@@ -32,8 +32,8 @@ class Api {
     return data;
   }
 
-  getRatedMovies = async () => {
-    const res = await fetch(`${API_URL}guest_session/${storage().getId()}/rated/movies?api_key=${API_KEY}&language=en-US&sort_by=created_at.asc`);
+  getRatedMovies = async (pageNumber = 1) => {
+    const res = await fetch(`${API_URL}guest_session/${storage().getId()}/rated/movies?api_key=${API_KEY}&language=en-US&sort_by=created_at.asc&page=${pageNumber}`);
     if (!res.ok) throw new Error(`Произошла ошибка, код ${res.status}`);
     const data = await res.json();
     return data;
