@@ -7,10 +7,11 @@ import Loader from "../Loader/Loader";
 
 import './movieCardsList.css';
 
-const MovieCardsList = ({movies, showPagination, loading, error, currentPage, totalResults, onChangePage, changeRating}) => {
+const MovieCardsList = ({movies, movieRating, showPagination, loading, error, currentPage, totalResults, onChangePage, changeRating}) => {
 
   const errorMsg = error ? <Alert type="error" message="Не удалось загрузить список фильмов!" banner /> : null;
   const moviesItems =  movies.map(movie => (<MovieCard key={movie.id}
+                                                       movieRating={movieRating}
                                                        changeRating={changeRating}
                                                        movie={movie} />));
 
@@ -47,6 +48,7 @@ const MovieCardsList = ({movies, showPagination, loading, error, currentPage, to
 
 MovieCardsList.defaultProps = {
   movies: [],
+  movieRating: {},
   loading: false,
   error: false,
   currentPage: 1,
@@ -59,6 +61,7 @@ MovieCardsList.defaultProps = {
 MovieCardsList.propTypes = {
   movies: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
+  movieRating: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.bool,
   showPagination: PropTypes.bool,
   currentPage: PropTypes.number,

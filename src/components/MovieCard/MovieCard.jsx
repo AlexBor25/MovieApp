@@ -7,12 +7,11 @@ import {Context} from "../../constants/context";
 import clipFunc from "../../utils/clipFunc";
 import getFilmGenre from "../../utils/getFilmGanre";
 import changeRatingColor from "../../utils/changeRatingColor";
-import storage from "../../utils/storage";
 
 import image from '../../assets/img/no-image.png';
 import './movieCard.css';
 
-const  MovieCard = ({movie, changeRating}) => {
+const  MovieCard = ({movie, changeRating, movieRating}) => {
 
   const allGenres = React.useContext(Context);
 
@@ -20,7 +19,6 @@ const  MovieCard = ({movie, changeRating}) => {
     title,
     id,
     overview,
-    rating = 0,
     release_date: date,
     poster_path: posterPath,
     vote_average: average,
@@ -30,8 +28,6 @@ const  MovieCard = ({movie, changeRating}) => {
   const genres = getFilmGenre(allGenres.genres, genreIds);
   const filmGenre = genres.map(genre => <span key={genre.id} className='genre'>{genre.name}</span>);
   const border = changeRatingColor(average);
-  const showRating = storage().getRating(id) ? storage().getRating(id) : rating;
-  const [rate, setRate] = React.useState(showRating);
   const poster = !posterPath ? image : `http://image.tmdb.org/t/p/w185${posterPath}`;
 
   return (
@@ -51,8 +47,7 @@ const  MovieCard = ({movie, changeRating}) => {
         </div>
         <Rate className='stars' onChange={(value) => {
           changeRating(id, value);
-          setRate(value);
-        }} value={rate} count='10' allowHalf defaultValue={rate}/>
+        }} value={movieRating[id]} count='10' allowHalf defaultValue={0}/>
       </div>
     </div>
   );
@@ -60,10 +55,12 @@ const  MovieCard = ({movie, changeRating}) => {
 
 MovieCard.defaultProps = {
   changeRating: () => {},
+  movieRating: {}
 };
 
 MovieCard.propTypes = {
   movie: PropTypes.objectOf(PropTypes.any).isRequired,
+  movieRating: PropTypes.objectOf(PropTypes.any),
   changeRating: PropTypes.func,
 };
 

@@ -9,7 +9,7 @@ import ContextProvider from "../../constants/context";
 import storage from "../../utils/storage";
 
 const { TabPane } = Tabs;
-const {saveRating, getId, saveId, clearStorage} = storage();
+const {saveRating, getRating, getId, saveId, clearStorage} = storage();
 const debounce = require('lodash.debounce');
 
 class App extends React.Component {
@@ -27,6 +27,7 @@ class App extends React.Component {
     totalResults: 0,
     totalRatedResults: 0,
     showPagination: true,
+    movieRating: {}
   };
 
   debounceFn = debounce(this.getData.bind(this), 1500);
@@ -37,6 +38,7 @@ class App extends React.Component {
       this.setState({
         searchMovies: [...data.results],
         loading: false,
+        movieRating: getRating(),
         totalResults: data.total_results,
         showPagination: false
       })
@@ -62,12 +64,20 @@ class App extends React.Component {
   };
 
   onChangeInput = (event) => {
-    this.setState({
-      searchField: (event.target.value).toLowerCase(),
-      loading: true,
-      showPagination: true,
-    });
-    this.debounceFn(event.target.value)
+    if (event.target.value !== '') {
+      this.setState({
+        searchField: (event.target.value).toLowerCase(),
+        loading: true,
+        showPagination: true,
+      });
+      this.debounceFn(event.target.value)
+    } else {
+      this.setState({
+        searchField: (event.target.value).toLowerCase(),
+        loading: false,
+      });
+      this.debounceFn.cancel()
+    }
   };
   
   onError = () => {
@@ -78,8 +88,12 @@ class App extends React.Component {
   };
 
   changeRating = (id, value) => {
+    const {movieRating} = this.state;
     this.api.putRating(id, value);
-    saveRating(id, value);
+    this.setState(({movieRating}) => ({
+      movieRating: {...movieRating, [id]: value}
+    }));
+    saveRating({...movieRating, [id]: value});
   };
 
   getRatedMovie = (pageNumber = 1) => {
@@ -122,7 +136,7 @@ class App extends React.Component {
   };
 
   render() {
-    const {searchMovies, currentRatedPage, totalRatedResults, loading, error, totalResults, currentPage, showPagination, ratedMovies} = this.state;
+    const {searchMovies, movieRating, currentRatedPage, totalRatedResults, loading, error, totalResults, currentPage, showPagination, ratedMovies} = this.state;
 
     return (
       <ContextProvider>
@@ -135,6 +149,7 @@ class App extends React.Component {
                                 loading={loading}
                                 totalResults={totalResults}
                                 currentPage={currentPage}
+                                movieRating={movieRating}
                                 showPagination={showPagination}
                                 changeRating={this.changeRating}
                                 onChangePage={this.onChangePage}
@@ -144,7 +159,9 @@ class App extends React.Component {
             <TabPane tab="Rated" key="2">
               <MovieCardsList movies={ratedMovies}
                               error={error}
+                              movieRating={movieRating}
                               onChangePage={this.onChangeRatedPage}
+                              changeRating={this.changeRating}
                               currentPage={currentRatedPage}
                               totalResults={totalRatedResults}
                               showPagination

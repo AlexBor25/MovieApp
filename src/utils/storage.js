@@ -1,9 +1,12 @@
 const storage = () => {
-  const saveRating = (id, rating) => {
-    localStorage.setItem(id, JSON.stringify(rating));
+  const saveRating = (rating) => {
+    localStorage.setItem('Rating', JSON.stringify(rating));
   };
 
-  const getRating = (id) => JSON.parse(localStorage.getItem(id));
+  const getRating = () => {
+    const ratedFilms = JSON.parse(localStorage.getItem('Rating'));
+    return !ratedFilms ? {} : ratedFilms;
+  };
   
   const saveId = (id) => {
     localStorage.setItem('guestId', JSON.stringify(id));

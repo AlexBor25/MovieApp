@@ -1,1 +1,1 @@
-https://movies-app-alexbor25.vercel.app/
+Ссылка на хостинг ====>>> https://movies-app-alexbor25.vercel.app/
